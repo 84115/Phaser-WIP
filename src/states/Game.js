@@ -17,14 +17,18 @@ export default class GameState extends SocketState
     {
         this.createPlayer();
         this.createPlayers();
-        this.createSockets();
+        // this.createSockets();
         this.createFx();
+
+        this.game.physics.arcade.gravity.y = 0;
 
         this.player.anchor.setTo(0.5);
 
         this.orb = this.game.add.sprite(0, 0, 'star');
         // this.orb.anchor.setTo(0.5);
         this.orb.pivot.x = 42;
+
+        this.fireButton = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     }
 
     createPlayer()
@@ -63,15 +67,15 @@ export default class GameState extends SocketState
         this.fx.addMarker('squit', 19, 0.3);
 
         //  Make some buttons to trigger the sounds
-        this.makeButton('alien death', 100, 100-100);
-        this.makeButton('boss hit', 100, 140-100);
-        this.makeButton('escape', 100, 180-100);
-        this.makeButton('meow', 100, 220-100);
-        this.makeButton('numkey', 100, 260-100);
-        this.makeButton('ping', 100, 300-100);
-        this.makeButton('death', 100, 340-100);
-        this.makeButton('shot', 100, 380-100);
-        this.makeButton('squit', 100, 420-100);
+        this.makeButton('alien death', 100, 0);
+        this.makeButton('boss hit', 100, 30);
+        this.makeButton('escape', 100, 60);
+        this.makeButton('meow', 100, 90);
+        this.makeButton('numkey', 100, 120);
+        this.makeButton('ping', 100, 150);
+        this.makeButton('death', 100, 180);
+        this.makeButton('shot', 100, 210);
+        this.makeButton('squit', 100, 240);
     }
 
     preRender()
@@ -86,12 +90,12 @@ export default class GameState extends SocketState
 
     update()
     {
-        if (this.player.uuid)
-        {
-            this.socketEmit('poll', this.player.schema());
-        }
+        // if (this.player.uuid)
+        // {
+        //     this.socketEmit('poll', this.player.schema());
+        // }
 
-        this.player.rotation -= 0.1;
+        // this.player.rotation -= 0.1;
         this.orb.rotation += 0.1;
 
         this.game.physics.arcade.collide(this.player, this.players);
@@ -181,13 +185,8 @@ export default class GameState extends SocketState
 
     makeButton(name, x, y)
     {
-        var button = this.game.add.button(x, y, 'dude', (button => this.fx.play(button.name)), this, 0, 1, 2);
+        var button = this.game.add.button(x, y, 'star', (button => this.fx.play(button.name)), this, 0, 1, 2);
         button.name = name;
-        button.scale.set(2, 1.5);
-        button.smoothed = false;
-
-        // var text = this.game.add.bitmapText(x, y + 7, 'nokia', name, 16);
-        // text.x += (button.width / 2) - (text.textWidth / 2);
     }
 
 }

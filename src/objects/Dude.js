@@ -1,27 +1,30 @@
 export default class Dude extends Phaser.Sprite
 {
 
-    constructor(game, x=0, y=0, key='dude_sheet')
+    constructor(game, x=0, y=0, key='ship')
     {
         super(game, x, y, key);
 
         this.createPhysics();
-        this.createTint();
-        this.createAnimation();
+        // this.createTint();
+        // this.createAnimation();
     }
 
     createPhysics()
     {
         this.game.physics.enable(this, Phaser.Physics.ARCADE);
 
-        this.body.gravity.y = 500;
-        this.body.maxVelocity.y = 500;
+        this.body.drag.set(70);
+        this.body.maxVelocity.set(200);
+
         this.body.collideWorldBounds = true;
     }
 
     createTint()
     {
         this.tint = Math.random() * 0xffffff;
+
+        return this;
     }
 
     createAnimation()
@@ -42,10 +45,10 @@ export default class Dude extends Phaser.Sprite
 
     setAnimation(animation='idle')
     {
-        if (this.facing != animation) {
-            this.animations.play(animation);
-            this.facing = animation;
-        }
+        // if (this.facing != animation) {
+        //     this.animations.play(animation);
+        //     this.facing = animation;
+        // }
     }
 
     moveToXY(x, y)

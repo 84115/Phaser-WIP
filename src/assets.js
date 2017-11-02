@@ -63,6 +63,10 @@ export default {
     type: 'image'
   },
   {
+    key: 'ship',
+    type: 'image'
+  },
+  {
     //  Example: Add a spritesheet texture.
     //
     //  If `url` is omitted, a pattern `<key>.png` is assumed.

@@ -19,7 +19,7 @@ export default class BootState extends Phaser.State {
     // Arcade Physics have it enabled by default.
     this.game.physics.startSystem(Phaser.Physics.Arcade);
 
-    this.physics.arcade.gravity.y = 125;
+    this.physics.arcade.gravity.y = 0;
 
     // Adjust how many pointers Phaser will check for input events.
     this.input.maxPointers = 2;
