@@ -15,25 +15,62 @@ export default class GameState extends SocketState
 
     create()
     {
+        this.game.physics.arcade.gravity.y = 0;
+
+
+
+        this.platforms = this.game.add.group();
+
+        for (var i = 0; i < 40; i++)
+        {
+            this.platforms.create(this.game.world.randomX, this.game.world.randomY, 'star');
+        }
+
+
+        this.orb = this.game.add.sprite(0, 0, 'star');
+        this.orb.pivot.x = 32;
+        this.orb2 = this.game.add.sprite(0, 0, 'star');
+        this.orb2.pivot.x = 32;
+        this.orb3 = this.game.add.sprite(0, 0, 'star');
+        this.orb3.pivot.x = 32;
+
+        this.orb.rotation = ((6.3/3)*1);
+        this.orb2.rotation = ((6.3/3)*2);
+        this.orb3.rotation = ((6.3/3)*3);
+
+        var tint = 13393619.447213572;
+        this.orb.tint = tint;
+        this.orb2.tint = tint;
+        this.orb3.tint = tint;
+
+
+
+
+
+
+        this.ball = this.game.add.sprite(200, 200, 'star');
+        this.game.physics.arcade.enable(this.ball);
+        this.ball.tint = tint;
+        this.ball.body.setCircle(8);
+        this.ball.body.collideWorldBounds = true;
+        this.ball.body.bounce.set(1);
+        this.ball.body.velocity.set(200);
+
+
+
+
+
         this.createPlayer();
+        this.player.anchor.setTo(0.5);
         this.createPlayers();
         // this.createSockets();
         this.createFx();
 
-        this.game.physics.arcade.gravity.y = 0;
-
-        this.player.anchor.setTo(0.5);
-
-        this.orb = this.game.add.sprite(0, 0, 'star');
-        // this.orb.anchor.setTo(0.5);
-        this.orb.pivot.x = 42;
-
-        this.fireButton = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
     }
 
     createPlayer()
     {
-        this.player = new Player(this.game);
+        this.player = new Player(this.game, 200, 200);
     }
 
     createPlayers()
@@ -82,10 +119,15 @@ export default class GameState extends SocketState
     {
         this.orb.x = this.player.x;
         this.orb.y = this.player.y;
-        // this.orb.x = this.player.x + 15;
-        // this.orb.y = this.player.y + 28;
+        this.orb2.x = this.player.x;
+        this.orb2.y = this.player.y;
+        this.orb3.x = this.player.x;
+        this.orb3.y = this.player.y;
+    }
 
-        // this.orb.position.rotate(this.player.x, this.player.y, 2, true, 100);
+    render()
+    {
+        this.game.debug.body(this.ball);
     }
 
     update()
@@ -95,8 +137,9 @@ export default class GameState extends SocketState
         //     this.socketEmit('poll', this.player.schema());
         // }
 
-        // this.player.rotation -= 0.1;
-        this.orb.rotation += 0.1;
+        this.orb.rotation += 0.08;
+        this.orb2.rotation += 0.08;
+        this.orb3.rotation += 0.08;
 
         this.game.physics.arcade.collide(this.player, this.players);
     }

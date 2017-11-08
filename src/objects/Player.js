@@ -18,6 +18,46 @@ export default class Player extends Dude
         this.createHealth(75);
         this.createControls();
 
+
+
+
+        this.game.stage.backgroundColor = '#000';
+
+
+
+        this.fx = this.game.add.audio('sfx');
+        this.fx.allowMultiple = true;
+        this.fx.addMarker('alien death', 1, 1.0);
+        this.fx.addMarker('boss hit', 3, 0.5);
+        this.fx.addMarker('escape', 4, 3.2);
+        this.fx.addMarker('meow', 8, 0.5);
+        this.fx.addMarker('numkey', 9, 0.1);
+        this.fx.addMarker('ping', 10, 1.0);
+        this.fx.addMarker('death', 12, 4.2);
+        this.fx.addMarker('shot', 17, 1.0);
+        this.fx.addMarker('squit', 19, 0.3);
+
+
+
+
+
+
+
+
+
+
+        this.emitter = this.game.add.emitter(this.x, this.y, 250);
+
+        this.emitter.makeParticles('star');
+
+        this.emitter.gravity = 0;
+        this.emitter.setAlpha(1, 0, 800);
+        this.emitter.setScale(0.8, 0, 0.8, 0, 800);
+
+        this.emitter.start(false, 400, 1);
+
+
+
         this.fireButton = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
         // Creates 30 bullets, using the 'star' graphic
@@ -39,6 +79,21 @@ export default class Player extends Dude
         // But the 'true' argument tells the weapon to track sprite rotation
         this.weapon.trackSprite(this, 24, 0, true);
 
+
+        // this.weapon.bulletWorldWrap = true;
+        // this.weapon.bulletAngleVariance = 10;
+
+
+
+        this.weapon.bulletSpeed = 400;
+        this.weapon.fireRate = 200;
+
+
+        // this.weapon.bulletSpeed = 400;
+        // this.weapon.fireRate = 25;
+        // this.weapon.bulletAngleVariance = 10;
+
+
         game.add.existing(this);
     }
 
@@ -48,34 +103,35 @@ export default class Player extends Dude
         {
             if (this.upKey.isDown)
             {
+                if (!this.thruster)
+                {
+                    // this.fx.play('escape', 1, true);
+                }
+
                 this.game.physics.arcade.accelerationFromRotation(this.rotation, 300, this.body.acceleration);
+            }
+            else if (this.revKey.isDown)
+            {
+                this.game.physics.arcade.accelerationFromRotation(this.rotation, -900, this.body.acceleration);
+                this.weapon.fireRate = 100;
+            }
+            else if (this.downKey.isDown)
+            {
+                this.game.physics.arcade.accelerationFromRotation(this.rotation, -150, this.body.acceleration);
             }
             else
             {
                 this.body.acceleration.set(0);
+                this.weapon.fireRate = 200;
             }
 
-            if (this.leftRotateKey.isDown)
-            {
-                // this.setAnimation('left');
-                // this.body.angularVelocity = -300;
-                this.body.velocity.x = -125;
-                // this.x--;
-            }
-            else if (this.rightRotateKey.isDown)
-            {
-                // this.setAnimation('right');
-                // this.body.angularVelocity = 300;
-                this.body.velocity.x = 125;
-                // this.x++;
-            }
             if (this.leftKey.isDown)
             {
-                this.body.angularVelocity = -300;
+                this.body.angularVelocity = -450;
             }
             else if (this.rightKey.isDown)
             {
-                this.body.angularVelocity = 300;
+                this.body.angularVelocity = 450;
             }
             else
             {
@@ -84,9 +140,33 @@ export default class Player extends Dude
 
             if (this.fireButton.isDown)
             {
+                this.fx.play('squit');
                 this.weapon.fire();
             }
         }
+
+
+
+        var px = this.body.velocity.x;
+        var py = this.body.velocity.y;
+
+        px *= -1;
+        py *= -1;
+
+        this.emitter.minParticleSpeed.set(px, py);
+        this.emitter.maxParticleSpeed.set(px, py);
+
+        this.emitter.emitX = this.body.x;
+        this.emitter.emitY = this.body.y;
+        this.emitter.x = this.body.x+10;
+        this.emitter.y = this.body.y+14;
+
+        // this.emitter.rotation = this.rotation;
+        this.emitter.forEach(function(item) {
+            item.rotation = this.rotation;
+            // item.pivot.x = this.body.pivot.x;
+        }, this);
+
     }
 
     createHealth(health)
@@ -102,8 +182,7 @@ export default class Player extends Dude
         this.downKey = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
         this.rightKey = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
 
-        this.leftRotateKey = this.game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        this.rightRotateKey = this.game.input.keyboard.addKey(Phaser.Keyboard.E);
+        this.revKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     }
 
 }
