@@ -1,6 +1,7 @@
 import SocketState from 'states/Socket';
 import Player from 'objects/Player';
 import Dude from 'objects/Dude';
+import BouncingBall from 'objects/BouncingBall';
 
 export default class GameState extends SocketState
 {
@@ -17,6 +18,7 @@ export default class GameState extends SocketState
     {
         this.game.physics.arcade.gravity.y = 0;
 
+        this.game.stage.backgroundColor = '#000';
 
 
         this.platforms = this.game.add.group();
@@ -48,13 +50,8 @@ export default class GameState extends SocketState
 
 
 
-        this.ball = this.game.add.sprite(200, 200, 'star');
-        this.game.physics.arcade.enable(this.ball);
-        this.ball.tint = tint;
-        this.ball.body.setCircle(8);
-        this.ball.body.collideWorldBounds = true;
-        this.ball.body.bounce.set(1);
-        this.ball.body.velocity.set(200);
+        this.ball = new BouncingBall(this.game);
+        this.ball2 = new BouncingBall(this.game, 300, 300);
 
 
 
@@ -123,11 +120,6 @@ export default class GameState extends SocketState
         this.orb2.y = this.player.y;
         this.orb3.x = this.player.x;
         this.orb3.y = this.player.y;
-    }
-
-    render()
-    {
-        this.game.debug.body(this.ball);
     }
 
     update()
