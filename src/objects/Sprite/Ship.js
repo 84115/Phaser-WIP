@@ -7,6 +7,15 @@ export default class Player extends Sprite
     {
         super(game, x, y, key);
 
+        var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
+
+        this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "- phaser -\nwith a sprinkle of\npixi dust", {
+            font: "65px Arial",
+            fill: "#ff0044",
+            align: "center"
+        });
+        this.text.anchor.set(0.5, 0.5);
+
         this.createHealth(75)
             .createPhysics()
             .createControls()
@@ -19,6 +28,10 @@ export default class Player extends Sprite
 
     update()
     {
+        this.text.setText(this.health + '/' + this.maxHealth);
+
+        if (this.health <= 0) this.kill();
+
         if (this.alive)
         {
             this.updateControls()
@@ -146,21 +159,25 @@ export default class Player extends Sprite
     {
         if (this.controls.superKey.isDown)
         {
-            this.game.physics.arcade.accelerationFromRotation(this.rotation, 900, this.body.acceleration);
-            this.weapon.fireRate = 100;
+            // this.game.physics.arcade.accelerationFromRotation(this.rotation, 900, this.body.acceleration);
+            this.weapon.fireRate = 50;
+            this.weapon.bulletAngleVariance = 15;
         }
         else if (this.controls.upKey.isDown)
         {
             this.game.physics.arcade.accelerationFromRotation(this.rotation, 300, this.body.acceleration);
+            this.weapon.bulletAngleVariance = 0;
         }
         else if (this.controls.downKey.isDown)
         {
             this.game.physics.arcade.accelerationFromRotation(this.rotation, -150, this.body.acceleration);
+            this.weapon.bulletAngleVariance = 0;
         }
         else
         {
             this.body.acceleration.set(0);
             this.weapon.fireRate = 200;
+            this.weapon.bulletAngleVariance = 0;
         }
 
         if (this.controls.leftKey.isDown)
@@ -226,8 +243,12 @@ export default class Player extends Sprite
 
     collidePopOrb(player, enemy)
     {
-        var index = player.orbs.children.length - 1;
+        var index = (player.orbs.children.length == 0 ? 0 : player.orbs.children.length - 1);
         var ref = player.orbs.children[index];
+
+        console.log(index);
+
+        if (index == 0) player.health -= 15;
 
         if (ref) ref.destroy();
 
