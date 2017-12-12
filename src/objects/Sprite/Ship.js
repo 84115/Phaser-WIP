@@ -24,6 +24,8 @@ export default class Player extends Sprite
             .createOrbs(5)
             .createWeapon()
             .addExisting(game);
+
+        this.switchWeapon('default');
     }
 
     update()
@@ -120,7 +122,7 @@ export default class Player extends Sprite
         return this;
     }
 
-    createWeapon()
+    createWeapon(type='default')
     {
         this.fireButton = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 
@@ -130,14 +132,6 @@ export default class Player extends Sprite
         // The bullet will be automatically killed when it leaves the world bounds
         this.weapon.bulletKillType = Phaser.Weapon.KILL_CAMERA_BOUNDS;
 
-        // The speed at which the bullet is fired
-        this.weapon.bulletSpeed = 1000;
-        // this.weapon.bulletSpeed = 1;
-
-        // Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
-        this.weapon.fireRate = 1;
-        // this.weapon.fireRate = 200;
-
         // Tell the Weapon to track the 'player' Sprite
         // With no offsets from the position
         // But the 'true' argument tells the weapon to track sprite rotation
@@ -145,7 +139,10 @@ export default class Player extends Sprite
 
         // this.weapon.bulletWorldWrap = true;
         // this.weapon.bulletAngleVariance = 10;
+        // The speed at which the bullet is fired
         this.weapon.bulletSpeed = 400;
+
+        // Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
         this.weapon.fireRate = 200;
 
         // this.weapon.bulletSpeed = 400;
@@ -155,12 +152,26 @@ export default class Player extends Sprite
         return this;
     }
 
+    switchWeapon(type='default')
+    {
+        if (this.weapon)
+        {
+            var config = this.getWeaponConfig(type);
+
+            console.log('CFG', config);
+
+            this.weapon.bulletKillType = config.bulletKillType;
+            this.weapon.bulletSpeed = config.bulletSpeed;
+            this.weapon.fireRate = config.fireRate;
+        }
+    }
+
     updateControls()
     {
         if (this.controls.superKey.isDown)
         {
             // this.game.physics.arcade.accelerationFromRotation(this.rotation, 900, this.body.acceleration);
-            this.weapon.fireRate = 50;
+            this.weapon.fireRate = 100;
             this.weapon.bulletAngleVariance = 15;
         }
         else if (this.controls.upKey.isDown)
@@ -253,6 +264,34 @@ export default class Player extends Sprite
         if (ref) ref.destroy();
 
         enemy.kill();
+    }
+
+    getWeaponConfig(type='default')
+    {
+        var cfg = {};
+
+        console.log(type);
+
+        if ('alt')
+        {
+            cfg = {
+                bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletSpeed: 50,
+                fireRate: 400
+            };
+        }
+        else
+        {
+            cfg = {
+                bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletSpeed: 400,
+                fireRate: 200
+            };
+        }
+
+        this.weaponConfig = cfg;
+
+        return cfg;
     }
 
 }

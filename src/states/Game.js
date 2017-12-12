@@ -38,7 +38,7 @@ export default class GameState extends SocketState
     {
         this.balls = this.game.add.group();
 
-        for (var i = 0; i < 100; i++)
+        for (var i = 0; i < 10; i++)
         {
             this.balls.add( new BouncingBall(this.game, this.game.world.randomX, this.game.world.randomY) );
         }
