@@ -9,7 +9,7 @@ export default class Player extends Sprite
 
         var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
 
-        this.text = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "- phaser -\nwith a sprinkle of\npixi dust", {
+        this.text = this.game.add.text(this.game.world.centerX-0, this.game.world.centerY-0, "- phaser -\nwith a sprinkle of\npixi dust", {
             font: "65px Arial",
             fill: "#ff0044",
             align: "center"
@@ -24,8 +24,6 @@ export default class Player extends Sprite
             .createOrbs(5)
             .createWeapon()
             .addExisting(game);
-
-        this.switchWeapon('alt');
     }
 
     update()
@@ -62,8 +60,12 @@ export default class Player extends Sprite
             leftKey: this.game.input.keyboard.addKey(Phaser.Keyboard.A),
             downKey: this.game.input.keyboard.addKey(Phaser.Keyboard.S),
             rightKey: this.game.input.keyboard.addKey(Phaser.Keyboard.D),
-            superKey: this.game.input.keyboard.addKey(Phaser.Keyboard.X)
+            weaponLeftKey: this.game.input.keyboard.addKey(Phaser.Keyboard.Q)
         };
+
+        this.controls.weaponLeftKey.onDown.add(function(){
+            this.switchWeapon(this.shift());
+        }, this);
 
         return this;
     }
@@ -143,8 +145,12 @@ export default class Player extends Sprite
         // Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
         this.weapon.fireRate = 200;
 
+        // http://www.html5gamedevs.com/topic/28703-how-to-stop-phaser-weapon-plugin-reloading/
+        // this.weapon.fireLimit = 1;
+
         this.weaponList = [
             'default',
+            'op',
             'alt'
         ];
 
@@ -157,8 +163,6 @@ export default class Player extends Sprite
         {
             var config = this.getWeaponConfig(type);
 
-            console.log(type, config);
-
             this.weapon.bulletKillType = config.bulletKillType;
             this.weapon.bulletSpeed = config.bulletSpeed;
             this.weapon.fireRate = config.fireRate;
@@ -169,9 +173,7 @@ export default class Player extends Sprite
     shift()
     {
         var list = this.weaponList;
-
-        var list = [1,2,3]
-        var start = list.shift()
+        var start = list.shift();
 
         list.push(start);
 
@@ -182,11 +184,7 @@ export default class Player extends Sprite
 
     updateControls()
     {
-        if (this.controls.superKey.isDown)
-        {
-            this.switchWeapon(this.shift());
-        }
-        else if (this.controls.upKey.isDown)
+        if (this.controls.upKey.isDown)
         {
             this.game.physics.arcade.accelerationFromRotation(this.rotation, 300, this.body.acceleration);
         }
@@ -197,7 +195,6 @@ export default class Player extends Sprite
         else
         {
             this.body.acceleration.set(0);
-            this.weapon.fireRate = 200;
         }
 
         if (this.controls.leftKey.isDown)
@@ -277,28 +274,28 @@ export default class Player extends Sprite
 
     getWeaponConfig(type='default')
     {
-        var cfg = {};
-
-        if (type == 'alt')
-        {
-            cfg = {
+        var config = {
+            alt: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 200,
                 fireRate: 200,
                 bulletAngleVariance: 15
-            };
-        }
-        else
-        {
-            cfg = {
+            },
+            op: {
+                bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletSpeed: 600,
+                fireRate: 50,
+                bulletAngleVariance: 30
+            },
+            default: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 400,
                 fireRate: 200,
                 bulletAngleVariance: 0
-            };
-        }
+            }
+        };
 
-        return cfg;
+        return config[type];
     }
 
 }
