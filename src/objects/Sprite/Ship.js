@@ -25,7 +25,7 @@ export default class Player extends Sprite
             .createWeapon()
             .addExisting(game);
 
-        this.switchWeapon('default');
+        this.switchWeapon('alt');
     }
 
     update()
@@ -137,17 +137,16 @@ export default class Player extends Sprite
         // But the 'true' argument tells the weapon to track sprite rotation
         this.weapon.trackSprite(this, 24, 0, true);
 
-        // this.weapon.bulletWorldWrap = true;
-        // this.weapon.bulletAngleVariance = 10;
         // The speed at which the bullet is fired
         this.weapon.bulletSpeed = 400;
 
         // Speed-up the rate of fire, allowing them to shoot 1 bullet every 60ms
         this.weapon.fireRate = 200;
 
-        // this.weapon.bulletSpeed = 400;
-        // this.weapon.fireRate = 25;
-        // this.weapon.bulletAngleVariance = 10;
+        this.weaponList = [
+            'default',
+            'alt'
+        ];
 
         return this;
     }
@@ -158,37 +157,47 @@ export default class Player extends Sprite
         {
             var config = this.getWeaponConfig(type);
 
-            console.log('CFG', config);
+            console.log(type, config);
 
             this.weapon.bulletKillType = config.bulletKillType;
             this.weapon.bulletSpeed = config.bulletSpeed;
             this.weapon.fireRate = config.fireRate;
+            this.weapon.bulletAngleVariance = config.bulletAngleVariance;
         }
+    }
+
+    shift()
+    {
+        var list = this.weaponList;
+
+        var list = [1,2,3]
+        var start = list.shift()
+
+        list.push(start);
+
+        this.weaponList = list;
+
+        return this.weaponList[0];
     }
 
     updateControls()
     {
         if (this.controls.superKey.isDown)
         {
-            // this.game.physics.arcade.accelerationFromRotation(this.rotation, 900, this.body.acceleration);
-            this.weapon.fireRate = 100;
-            this.weapon.bulletAngleVariance = 15;
+            this.switchWeapon(this.shift());
         }
         else if (this.controls.upKey.isDown)
         {
             this.game.physics.arcade.accelerationFromRotation(this.rotation, 300, this.body.acceleration);
-            this.weapon.bulletAngleVariance = 0;
         }
         else if (this.controls.downKey.isDown)
         {
             this.game.physics.arcade.accelerationFromRotation(this.rotation, -150, this.body.acceleration);
-            this.weapon.bulletAngleVariance = 0;
         }
         else
         {
             this.body.acceleration.set(0);
             this.weapon.fireRate = 200;
-            this.weapon.bulletAngleVariance = 0;
         }
 
         if (this.controls.leftKey.isDown)
@@ -270,14 +279,13 @@ export default class Player extends Sprite
     {
         var cfg = {};
 
-        console.log(type);
-
-        if ('alt')
+        if (type == 'alt')
         {
             cfg = {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
-                bulletSpeed: 50,
-                fireRate: 400
+                bulletSpeed: 200,
+                fireRate: 200,
+                bulletAngleVariance: 15
             };
         }
         else
@@ -285,11 +293,10 @@ export default class Player extends Sprite
             cfg = {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 400,
-                fireRate: 200
+                fireRate: 200,
+                bulletAngleVariance: 0
             };
         }
-
-        this.weaponConfig = cfg;
 
         return cfg;
     }
