@@ -7,15 +7,6 @@ export default class Player extends Sprite
     {
         super(game, x, y, key);
 
-        var style = { font: "65px Arial", fill: "#ff0044", align: "center" };
-
-        this.text = this.game.add.text(this.game.world.centerX-0, this.game.world.centerY-0, "- phaser -\nwith a sprinkle of\npixi dust", {
-            font: "65px Arial",
-            fill: "#ff0044",
-            align: "center"
-        });
-        this.text.anchor.set(0.5, 0.5);
-
         this.createHealth(75)
             .createPhysics()
             .createControls()
@@ -23,12 +14,14 @@ export default class Player extends Sprite
             .createEmitter()
             .createOrbs(5)
             .createWeapon()
+            .createInfo()
             .addExisting(game);
     }
 
     update()
     {
-        this.text.setText(this.health + '/' + this.maxHealth);
+        this.textHealth.setText(this.health + '/' + this.maxHealth);
+        this.textWeapon.setText(this.weaponList[0]);
 
         if (this.health <= 0) this.kill();
 
@@ -146,13 +139,27 @@ export default class Player extends Sprite
         this.weapon.fireRate = 200;
 
         // http://www.html5gamedevs.com/topic/28703-how-to-stop-phaser-weapon-plugin-reloading/
-        // this.weapon.fireLimit = 1;
+        this.weapon.fireLimit = 0;
 
         this.weaponList = [
             'default',
-            'op',
-            'alt'
+            'op'
         ];
+
+        this.weaponList.push('alt');
+
+        return this;
+    }
+
+    createInfo()
+    {
+        var style = { font: "18px Arial", fill: "#fff", align: "center" };
+
+        this.textHealth = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "- phaser -\nwith a sprinkle of\npixi dust", style);
+        this.textHealth.anchor.set(0.5, 0.5);
+
+        this.textWeapon = this.game.add.text(100, 100, "", style);
+        this.textWeapon.anchor.set(0.5, 0.5);
 
         return this;
     }
@@ -167,6 +174,7 @@ export default class Player extends Sprite
             this.weapon.bulletSpeed = config.bulletSpeed;
             this.weapon.fireRate = config.fireRate;
             this.weapon.bulletAngleVariance = config.bulletAngleVariance;
+            this.weapon.fireLimit = config.fireLimit;
         }
     }
 
@@ -279,19 +287,22 @@ export default class Player extends Sprite
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 200,
                 fireRate: 200,
-                bulletAngleVariance: 15
+                bulletAngleVariance: 15,
+                fireLimit: 0
             },
             op: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 600,
                 fireRate: 50,
-                bulletAngleVariance: 30
+                bulletAngleVariance: 30,
+                fireLimit: 50
             },
             default: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 400,
                 fireRate: 200,
-                bulletAngleVariance: 0
+                bulletAngleVariance: 0,
+                fireLimit: 0
             }
         };
 
