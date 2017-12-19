@@ -20,8 +20,13 @@ export default class Player extends Sprite
 
     update()
     {
-        this.textHealth.setText(this.health + '/' + this.maxHealth);
-        this.textWeapon.setText(this.weaponList[0]);
+        var weaponConfig = this.weaponConfig[this.weaponList[0]];
+        this.textHealth.setText("health: " + this.health + '/' + this.maxHealth);
+        this.textWeapon.setText(
+            this.weaponList[0] +
+            ": " + weaponConfig.ammo +
+            " / " + (weaponConfig.ammo * weaponConfig.clipSize)
+            );
 
         if (this.health <= 0) this.kill();
 
@@ -31,6 +36,10 @@ export default class Player extends Sprite
                 .updateWeapon()
                 .updateOrbs()
                 .updateEmmiter();
+        }
+        else {
+            // Called To Often Make Singleton Fn
+            this.emitter.on = false;
         }
     }
 
@@ -143,23 +152,22 @@ export default class Player extends Sprite
 
         this.weaponList = [
             'default',
-            'op'
+            'op',
+            'alt'
         ];
 
-        this.weaponList.push('alt');
+        this.weaponConfig = this.generateWeaponConfig();
 
         return this;
     }
 
     createInfo()
     {
-        var style = { font: "18px Arial", fill: "#fff", align: "center" };
+        var fontSize = 12;
+        var style = { font: fontSize + "px Arial", fill: "#fff", align: "left" };
 
-        this.textHealth = this.game.add.text(this.game.world.centerX, this.game.world.centerY, "- phaser -\nwith a sprinkle of\npixi dust", style);
-        this.textHealth.anchor.set(0.5, 0.5);
-
-        this.textWeapon = this.game.add.text(100, 100, "", style);
-        this.textWeapon.anchor.set(0.5, 0.5);
+        this.textHealth = this.game.add.text(fontSize, fontSize, "health", style);
+        this.textWeapon = this.game.add.text(fontSize, fontSize*2, "weapon", style);
 
         return this;
     }
@@ -168,13 +176,11 @@ export default class Player extends Sprite
     {
         if (this.weapon)
         {
-            var config = this.getWeaponConfig(type);
-
-            this.weapon.bulletKillType = config.bulletKillType;
-            this.weapon.bulletSpeed = config.bulletSpeed;
-            this.weapon.fireRate = config.fireRate;
-            this.weapon.bulletAngleVariance = config.bulletAngleVariance;
-            this.weapon.fireLimit = config.fireLimit;
+            this.weapon.bulletKillType = this.weaponConfig[type].bulletKillType;
+            this.weapon.bulletSpeed = this.weaponConfig[type].bulletSpeed;
+            this.weapon.fireRate = this.weaponConfig[type].fireRate;
+            this.weapon.bulletAngleVariance = this.weaponConfig[type].bulletAngleVariance;
+            this.weapon.fireLimit = this.weaponConfig[type].fireLimit;
         }
     }
 
@@ -280,33 +286,37 @@ export default class Player extends Sprite
         enemy.kill();
     }
 
-    getWeaponConfig(type='default')
+    generateWeaponConfig()
     {
-        var config = {
+        return {
             alt: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 200,
                 fireRate: 200,
                 bulletAngleVariance: 15,
-                fireLimit: 0
+                ammo: 0,
+                clipSize: 0,
+                clipCount: 0
             },
             op: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 600,
                 fireRate: 50,
                 bulletAngleVariance: 30,
-                fireLimit: 50
+                ammo: 100,
+                clipSize: 1,
+                clipCount: 1
             },
             default: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
                 bulletSpeed: 400,
                 fireRate: 200,
                 bulletAngleVariance: 0,
-                fireLimit: 0
+                ammo: 0,
+                clipSize: 0,
+                clipCount: 0
             }
         };
-
-        return config[type];
     }
 
 }
