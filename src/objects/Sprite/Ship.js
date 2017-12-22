@@ -21,12 +21,10 @@ export default class Player extends Sprite
     update()
     {
         var weaponConfig = this.weaponConfig[this.weaponList[0]];
+
         this.textHealth.setText("health: " + this.health + '/' + this.maxHealth);
-        this.textWeapon.setText(
-            this.weaponList[0] +
-            ": " + weaponConfig.ammo +
-            " / " + (weaponConfig.ammo * weaponConfig.clipSize)
-            );
+        this.textWeaponName.setText("weapon: " + this.weaponList[0]);
+        this.textWeaponAmmo.setText("ammo: " + weaponConfig.ammo + "/" + (weaponConfig.ammo * weaponConfig.clipSize));
 
         if (this.health <= 0) this.kill();
 
@@ -153,8 +151,12 @@ export default class Player extends Sprite
         this.weaponList = [
             'default',
             'op',
-            'alt'
+            'alt',
+            'bomb'
         ];
+
+        // Power Up Example (Make this last 30 seconds, button to trigger?)
+        // this.weapon.bulletWorldWrap = true;
 
         this.weaponConfig = this.generateWeaponConfig();
 
@@ -167,7 +169,8 @@ export default class Player extends Sprite
         var style = { font: fontSize + "px Arial", fill: "#fff", align: "left" };
 
         this.textHealth = this.game.add.text(fontSize, fontSize, "health", style);
-        this.textWeapon = this.game.add.text(fontSize, fontSize*2, "weapon", style);
+        this.textWeaponName = this.game.add.text(fontSize, fontSize*2, "weapon", style);
+        this.textWeaponAmmo = this.game.add.text(fontSize, fontSize*3, "weapon-data", style);
 
         return this;
     }
@@ -178,6 +181,7 @@ export default class Player extends Sprite
         {
             this.weapon.bulletKillType = this.weaponConfig[type].bulletKillType;
             this.weapon.bulletSpeed = this.weaponConfig[type].bulletSpeed;
+            this.weapon.bulletLifespan = this.weaponConfig[type].bulletLifespan;
             this.weapon.fireRate = this.weaponConfig[type].fireRate;
             this.weapon.bulletAngleVariance = this.weaponConfig[type].bulletAngleVariance;
             this.weapon.fireLimit = this.weaponConfig[type].fireLimit;
@@ -288,27 +292,42 @@ export default class Player extends Sprite
 
     generateWeaponConfig()
     {
+        // clipCount (Adjusted) should equal clipSize when updated
+        // LOOK INTO http://phaser.io/docs/2.5.0/Phaser.Weapon.html#fireRate
         return {
             alt: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletLifespan: 0,
                 bulletSpeed: 200,
                 fireRate: 200,
                 bulletAngleVariance: 15,
-                ammo: 0,
+                ammo: 200,
+                clipSize: 6,
+                clipCount: 6 
+            },
+            bomb: {
+                bulletKillType: Phaser.Weapon.KILL_LIFESPAN,
+                bulletLifespan: 20000,
+                bulletSpeed: 0,
+                fireRate: 1000,
+                bulletAngleVariance: 0,
+                ammo: 10,
                 clipSize: 0,
-                clipCount: 0
+                clipCount: 0 
             },
             op: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletLifespan: 0,
                 bulletSpeed: 600,
                 fireRate: 50,
                 bulletAngleVariance: 30,
-                ammo: 100,
+                ammo: 50,
                 clipSize: 1,
                 clipCount: 1
             },
             default: {
                 bulletKillType: Phaser.Weapon.KILL_CAMERA_BOUNDS,
+                bulletLifespan: 0,
                 bulletSpeed: 400,
                 fireRate: 200,
                 bulletAngleVariance: 0,
