@@ -1,8 +1,7 @@
-import SocketState from 'states/Socket';
 import Player from 'objects/Sprite/Ship';
 import BouncingBall from 'objects/Sprite/BouncingBall';
 
-export default class GameState extends SocketState
+export default class GameState
 {
 
     create()
